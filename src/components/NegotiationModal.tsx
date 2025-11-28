@@ -52,17 +52,34 @@ export function NegotiationModal({ freight, isOpen, onClose }: NegotiationModalP
             const data = await response.json()
             let aiText = data.content
 
-            // Check for deal agreement tag
-            const dealMatch = aiText.match(/\[DEAL_AGREED:\s*(\d+)\]/)
-            if (dealMatch) {
-                const agreedPrice = parseInt(dealMatch[1])
+            // Check for field updates
+            const updateMatch = aiText.match(/\[UPDATE:\s*(\w+)=([^\]]+)\]/)
+            if (updateMatch) {
+                const [, field, value] = updateMatch
                 // Remove tag from spoken text
-                aiText = aiText.replace(/\[DEAL_AGREED:\s*\d+\]/, '').trim()
+                aiText = aiText.replace(/\[UPDATE:\s*\w+=[^\]]+\]/, '').trim()
 
-                // Update freight status
+                // Update freight detail
+                updateFreight(freight.id, {
+                    [field]: value
+                })
+            }
+
+            // Check for deal agreement tag
+            // Regex handles: [DEAL_AGREED: 2500], [DEAL_AGREED: $2500], [DEAL_AGREED:2500]
+            const dealMatch = aiText.match(/\[DEAL_AGREED:\s*\$?([\d,]+)\]/)
+            if (dealMatch) {
+                // Remove commas if present (e.g. 2,500)
+                const agreedPrice = parseInt(dealMatch[1].replace(/,/g, ''))
+                // Remove tag from spoken text
+                aiText = aiText.replace(/\[DEAL_AGREED:[^\]]+\]/, '').trim()
+
+                // Update freight status and save logs
                 updateFreight(freight.id, {
                     price: agreedPrice,
-                    status: 'booked'
+                    status: 'booked',
+                    logs: [...messages, { role: 'assistant', content: aiText, id: Math.random().toString(), timestamp: Date.now() }],
+                    originalPrice: freight.originalPrice || freight.price, // Save original price if not set
                 })
 
                 // Close modal after a delay (allow AI to say goodbye)
@@ -179,7 +196,7 @@ export function NegotiationModal({ freight, isOpen, onClose }: NegotiationModalP
                                 <select
                                     value={language}
                                     onChange={(e) => setLanguage(e.target.value as 'en-US' | 'ru-RU' | 'uz-UZ')}
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 bg-white"
                                 >
                                     <option value="en-US">🇺🇸 English</option>
                                     <option value="ru-RU">🇷🇺 Русский (Russian)</option>

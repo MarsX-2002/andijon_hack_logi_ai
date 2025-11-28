@@ -27,9 +27,9 @@ LANGUAGE RULES:
 IMPORTANT RULES:
 1. Keep responses VERY short (1-2 sentences max) - this is a phone call
 2. Once a price is AGREED upon by both parties, say "Perfect! I'll send you the confirmation. Have a great day!" and include the tag \`[DEAL_AGREED: PRICE]\` at the end (e.g., \`[DEAL_AGREED: 2500]\`).
-3. Do NOT keep repeating the same confirmation - once agreed, END the conversation
-4. If the broker accepts your price, ACCEPT it and END with the tag
-5. Listen to what the broker says - don't just repeat yourself
+3. If you find out missing details (like pickup date, weight), output \`[UPDATE: field=value]\` (e.g., \`[UPDATE: pickupDate=2023-11-30]\`).
+4. Do NOT keep repeating the same confirmation - once agreed, END the conversation
+5. If the broker accepts your price, ACCEPT it and END with the tag
 
 Be professional, concise, and know when to close the deal.
 `

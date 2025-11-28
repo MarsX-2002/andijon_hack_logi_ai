@@ -9,6 +9,9 @@ export interface Freight {
     status: 'open' | 'negotiating' | 'booked' | 'delivered';
     brokerId: string;
     co2Saved?: number; // in kg
+    logs?: Message[]; // Conversation history
+    recordingUrl?: string; // URL to audio recording
+    originalPrice?: number; // Starting price before negotiation
 }
 
 export interface Broker {

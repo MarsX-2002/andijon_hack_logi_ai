@@ -77,7 +77,7 @@ export function FreightList() {
                                             <Truck className="w-4 h-4" />
                                             {freight.weight}t
                                         </span>
-                                        <Badge variant="outline" className="text-xs">
+                                        <Badge variant="outline" className="text-xs text-slate-700 border-slate-300">
                                             {freight.commodity}
                                         </Badge>
                                     </div>
@@ -114,16 +114,78 @@ export function FreightList() {
                                         </div>
                                     </div>
 
-                                    <Button
-                                        className="w-full bg-blue-500 hover:bg-blue-600"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            setSelectedFreight(freight)
-                                        }}
-                                    >
-                                        <Phone className="w-4 h-4 mr-2" />
-                                        AI Negotiate
-                                    </Button>
+                                    {/* KPI & Logs Section */}
+                                    {freight.status === 'booked' && (
+                                        <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <span className="text-sm font-semibold text-green-800">Negotiation Success</span>
+                                                {freight.originalPrice && (
+                                                    <Badge className="bg-green-200 text-green-800">
+                                                        Saved ${freight.originalPrice - freight.price}
+                                                    </Badge>
+                                                )}
+                                            </div>
+
+                                            {/* Audio Re-enactment */}
+                                            {freight.logs && freight.logs.length > 0 && (
+                                                <div className="mb-3">
+                                                    <p className="text-xs text-slate-500 mb-1">Call Recording</p>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full justify-start text-slate-700"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            // Simple TTS re-enactment
+                                                            const utterance = new SpeechSynthesisUtterance("Playing call recording.")
+                                                            window.speechSynthesis.speak(utterance)
+
+                                                            freight.logs?.forEach((log) => {
+                                                                const u = new SpeechSynthesisUtterance(log.content)
+                                                                // Alternate voices if possible, or just pitch
+                                                                u.pitch = log.role === 'assistant' ? 1 : 0.8
+                                                                u.rate = 1.1
+                                                                window.speechSynthesis.speak(u)
+                                                            })
+                                                        }}
+                                                    >
+                                                        <Phone className="w-3 h-3 mr-2" />
+                                                        Play Recording (Re-enactment)
+                                                    </Button>
+                                                </div>
+                                            )}
+
+                                            {/* Transcript Toggle */}
+                                            {freight.logs && freight.logs.length > 0 && (
+                                                <details className="text-sm" open>
+                                                    <summary className="cursor-pointer text-blue-600 font-medium hover:underline">
+                                                        View Call Transcript
+                                                    </summary>
+                                                    <div className="mt-2 space-y-2 max-h-40 overflow-y-auto p-2 bg-white rounded border">
+                                                        {freight.logs.map(log => (
+                                                            <div key={log.id} className={`p-2 rounded ${log.role === 'assistant' ? 'bg-blue-50' : 'bg-slate-50'}`}>
+                                                                <span className="font-bold text-xs text-slate-500 uppercase">{log.role}:</span>
+                                                                <p className="text-slate-800">{log.content}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </details>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {freight.status !== 'booked' && (
+                                        <Button
+                                            className="w-full bg-blue-500 hover:bg-blue-600"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setSelectedFreight(freight)
+                                            }}
+                                        >
+                                            <Phone className="w-4 h-4 mr-2" />
+                                            AI Negotiate
+                                        </Button>
+                                    )}
                                 </motion.div>
                             )}
                         </CardContent>
