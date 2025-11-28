@@ -8,6 +8,9 @@ A Next.js application featuring an AI-powered Voice Agent for freight negotiatio
 - **Sustainability**: Tracks CO2 savings for each load.
 - **Logs & Analytics**: Full conversation transcripts and audio re-enactment.
 
+## Dashboard Demo
+![Dashboard Demo](public/screenshots/dashboard_demo.png)
+
 ## Call Logs & Transcript Example
 ![Call Logs & Transcript](public/screenshots/call_logs_transcript.png)
 
